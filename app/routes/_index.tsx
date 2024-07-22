@@ -4,8 +4,8 @@ import Calculator from "~/component/Calculator";
 
 const Index: FC = () => {
   return (
-    <div>
-      <h1>Basic Calculator</h1>
+    <div className="flex items-center justify-center h-screen">
+
       <Calculator />
     </div>
   );
