@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 
 const button = [
     { value: 'AC', className: 'col-span-2 h-12 bg-emerald-900 text-white', id: 'clear' },
@@ -79,6 +79,25 @@ const Calculator = () => {
 
     }
 
+    const handleKeyDown = useCallback((event: KeyboardEvent) => {
+       const key = event.key;
+       if (/^[0-9+\-*/.()]$/.test(key)) {
+        handleClick(key);
+      } else if (key === "Enter" || key === "=") {
+        handleCalculate();
+      } else if (key === "Escape" || key === "c" || key === "C") {
+        handleClear();
+      } else if (key === "Backspace") {
+        setInput(prev => prev.slice(0, -1));
+      }
+    }, [handleClick, handleCalculate, handleClear]);
+
+    useEffect(() => {
+        window.addEventListener("keydown", handleKeyDown);
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+        };
+    }, [handleKeyDown]);
     
 
     return (
