@@ -22,25 +22,23 @@ const button = [
 const Calculator = () => {
     const [input, setInput] = useState<string>("");
     const [result, setResult] = useState<string>("0");
-
+    const [isNewCalculation, setIsNewCalculation] = useState<boolean>(true);
     const handleClick = (value: string) => {
-        if (result === "0") {
+        if (isNewCalculation) {
             setResult(value);
             setInput(value);
-            return;
-        } else if (result === "/" || result === "*" || result === "+" || result === "-") {
-            setResult(value);
-            setInput((prev) => prev + value);
-            return;
+            setIsNewCalculation(false);
         } else {
+            if (result === "0") {
+                setResult(value);
+                setInput(value);
+                return;
+            } else if (checkOperator(result)) {
+                setResult(value);
+                setInput((prev) => prev + value);
+                return;
+            }
             switch (value) {
-                case "AC":
-                    setInput("");
-                    setResult("0");
-                    break;
-                case "=":
-                    handleCalculate();
-                    break;
                 case "/":
                 case "*":
                 case "+":
@@ -56,15 +54,32 @@ const Calculator = () => {
         }
 
     }
-
-    const handleCalculate = () => {
-        try {
-            setResult(eval(input).toString());
-        } catch (error) {
-            setResult("Error");
+    const checkOperator = (value: string) => {
+        if (value === "+" || value === "-" || value === "*" || value === "/") {
+            return true;
         }
+        return false;
+    }
+    const handleClear = () => {
+        setInput("");
+        setResult("0");
+        setIsNewCalculation(true);
+    }
+    const handleCalculate = () => {
+        if (input) {
+            try {
+                setResult(eval(input).toString());
+                setIsNewCalculation(true);
+            } catch (error) {
+                setResult("Error");
+                setInput("");
+                setIsNewCalculation(true);
+            }
+        }
+
     }
 
+    
 
     return (
         <div id='calculator' className='snap-center w-2/12 text-lg'>
@@ -74,8 +89,10 @@ const Calculator = () => {
             </div>
             <div className='buttons grid grid-cols-4 gap-0 divide-y divide-x divide-emerald-900 border border-emerald-900 border-l-0'>
                 {button.map((btn) => (
-                    <button key={btn.id} id={btn.id} className={btn.className} onClick={() => handleClick(btn.value)
-                    }>{btn.value}</button>
+                    <button key={btn.id} id={btn.id} className={btn.className}
+                        onClick={() => btn.value === "AC" ? handleClear() :
+                            btn.value === "=" ? handleCalculate() : handleClick(btn.value)}
+                    >{btn.value}</button>
                 ))}
 
             </div>
